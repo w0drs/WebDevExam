@@ -18,23 +18,41 @@
         </div>
 
         <div class="form-group">
-            <label for="text">Текст рецензии *</label>
+            <label for="text">Текст рецензии * (поддерживает Markdown)</label>
             <textarea id="text" name="text" required class="form-control" rows="8" placeholder="Напишите вашу рецензию здесь..."></textarea>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <button type="button" class="btn btn-primary" onclick="submitReviewForm()">Сохранить</button>
             <a href="{{ url_for('book_detail', book_id=book.id) }}" class="btn btn-secondary">Отмена</a>
         </div>
     </form>
 </div>
 
+<!-- EasyMDE CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+<script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
+
 <script>
-    // Отладка отправки формы
-    document.getElementById('reviewForm').addEventListener('submit', function(e) {
-        console.log('=== ФОРМА ОТПРАВЛЯЕТСЯ ===');
-        console.log('Rating:', document.getElementById('rating').value);
-        console.log('Text:', document.getElementById('text').value);
+    let easyMDEReview;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('text');
+        if (textarea && typeof EasyMDE !== 'undefined') {
+            easyMDEReview = new EasyMDE({
+                element: textarea,
+                spellChecker: false,
+                toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'code', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', 'side-by-side', 'fullscreen']
+            });
+            console.log('EasyMDE initialized for review');
+        }
     });
+
+    function submitReviewForm() {
+        if (easyMDEReview) {
+            document.getElementById('text').value = easyMDEReview.value();
+        }
+        document.getElementById('reviewForm').submit();
+    }
 </script>
 {% endblock %}
