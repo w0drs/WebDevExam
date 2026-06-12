@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Мои рецензии</h1>
+
+<div class="reviews-list">
+    {% if reviews %}
+        {% for review in reviews %}
+        <div class="review-card">
+            <div class="review-header">
+                <h3 class="review-book-title">{{ review.book.title }}</h3>
+                <span class="review-rating">Оценка: {{ review.rating }}/5</span>
+                <span class="review-status status-{{ review.status_rel.name.lower().replace(' ', '-') }}">
+                    {{ review.status_rel.name }}
+                </span>
+            </div>
+            <div class="review-text">{{ review.text|safe }}</div>
+            <div class="review-footer">
+                <span class="review-date">{{ review.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                <a href="{{ url_for('book_detail', book_id=review.book.id) }}" class="btn btn-sm btn-view">К книге</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-data">У вас пока нет рецензий</p>
+    {% endif %}
+</div>
+{% endblock %}

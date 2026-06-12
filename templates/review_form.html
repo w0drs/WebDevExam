@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Рецензия на книгу "{{ book.title }}"</h2>
+
+    <form method="POST" class="review-form" id="reviewForm">
+        <div class="form-group">
+            <label for="rating">Оценка *</label>
+            <select id="rating" name="rating" required class="form-control">
+                <option value="5">5 – отлично</option>
+                <option value="4">4 – хорошо</option>
+                <option value="3">3 – удовлетворительно</option>
+                <option value="2">2 – неудовлетворительно</option>
+                <option value="1">1 – плохо</option>
+                <option value="0">0 – ужасно</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="text">Текст рецензии *</label>
+            <textarea id="text" name="text" required class="form-control" rows="8" placeholder="Напишите вашу рецензию здесь..."></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="{{ url_for('book_detail', book_id=book.id) }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Отладка отправки формы
+    document.getElementById('reviewForm').addEventListener('submit', function(e) {
+        console.log('=== ФОРМА ОТПРАВЛЯЕТСЯ ===');
+        console.log('Rating:', document.getElementById('rating').value);
+        console.log('Text:', document.getElementById('text').value);
+    });
+</script>
+{% endblock %}

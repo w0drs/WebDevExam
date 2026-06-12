@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="moderate-detail">
+    <h1>Рассмотрение рецензии</h1>
+    
+    <div class="review-detail-card">
+        <div class="detail-row">
+            <strong>Книга:</strong>
+            <a href="{{ url_for('book_detail', book_id=review.book.id) }}">{{ review.book.title }}</a>
+        </div>
+        
+        <div class="detail-row">
+            <strong>Пользователь:</strong>
+            <span>{{ review.user.full_name }}</span>
+        </div>
+        
+        <div class="detail-row">
+            <strong>Оценка:</strong>
+            <span>{{ review.rating }}/5</span>
+        </div>
+        
+        <div class="detail-row">
+            <strong>Дата добавления:</strong>
+            <span>{{ review.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+        </div>
+        
+        <div class="detail-row">
+            <strong>Текст рецензии:</strong>
+            <div class="review-text-full">{{ review.text|safe }}</div>
+        </div>
+        
+        <div class="moderate-actions">
+            <form method="POST" action="{{ url_for('approve_review', review_id=review.id) }}" style="display: inline;">
+                <button type="submit" class="btn btn-success">Одобрить</button>
+            </form>
+            <form method="POST" action="{{ url_for('reject_review', review_id=review.id) }}" style="display: inline;">
+                <button type="submit" class="btn btn-danger">Отклонить</button>
+            </form>
+            <a href="{{ url_for('moderate_reviews') }}" class="btn btn-secondary">Назад к списку</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

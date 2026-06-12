@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Электронная библиотека</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="{{ url_for('index') }}">📚 Электронная библиотека</a>
+            </div>
+            <div class="nav-menu">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.has_role('Пользователь') %}
+                        <a href="{{ url_for('my_reviews') }}" class="nav-link">Мои рецензии</a>
+                    {% endif %}
+                    {% if current_user.has_role('Модератор') %}
+                        <a href="{{ url_for('moderate_reviews') }}" class="nav-link">Модерация рецензий</a>
+                    {% endif %}
+                    <div class="nav-user">
+                        <span class="user-name">{{ current_user.full_name }}</span>
+                        <a href="{{ url_for('logout') }}" class="nav-link btn-logout">Выйти</a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link btn-login">Войти</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+        <p>Группа: 241-327 | ФИО: Голик Дмитрий Сергеевич</p>
+    </footer>
+
+    <script>
+        // Modal functionality
+        function showDeleteModal(bookId, bookTitle) {
+            const modal = document.getElementById('deleteModal');
+            const modalMessage = document.getElementById('modalMessage');
+            const confirmBtn = document.getElementById('confirmDelete');
+
+            modalMessage.textContent = `Вы уверены, что хотите удалить книгу "${bookTitle}"?`;
+            confirmBtn.onclick = function() {
+                document.getElementById(`delete-form-${bookId}`).submit();
+            };
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

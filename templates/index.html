@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Список книг</h1>
+
+<div class="books-grid">
+    {% for book in books %}
+    <div class="book-card">
+        <div class="book-cover">
+            {% if book.cover %}
+            <img src="{{ url_for('static', filename='uploads/' + book.cover.filename) }}" alt="{{ book.title }}">
+            {% else %}
+            <div class="no-cover">Нет обложки</div>
+            {% endif %}
+        </div>
+        <div class="book-info">
+            <h3 class="book-title">{{ book.title }}</h3>
+            <p class="book-author">{{ book.author }}</p>
+            <p class="book-year">{{ book.year }} г.</p>
+            <div class="book-genres">
+                {% for genre in book.genres %}
+                <span class="genre-tag">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
+            <div class="book-stats">
+                <span>⭐ {{ "%.1f"|format(book.avg_rating) }}</span>
+                <span>📝 {{ book.reviews_count }} рец.</span>
+            </div>
+            <div class="book-actions">
+                <a href="{{ url_for('book_detail', book_id=book.id) }}" class="btn btn-view">Просмотр</a>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.has_role('Администратор') or current_user.has_role('Модератор') %}
+                        <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn btn-edit">Редактировать</a>
+                    {% endif %}
+                    {% if current_user.has_role('Администратор') %}
+                        <button onclick="showDeleteModal({{ book.id }}, '{{ book.title }}')" class="btn btn-delete">Удалить</button>
+                        <form id="delete-form-{{ book.id }}" action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" style="display: none;"></form>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if current_user.is_authenticated and current_user.has_role('Администратор') %}
+<div class="add-book-btn">
+    <a href="{{ url_for('add_book') }}" class="btn btn-add">+ Добавить книгу</a>
+</div>
+{% endif %}
+
+{% if total > books_per_page %}
+<div class="pagination">
+    {% if page > 1 %}
+        <a href="{{ url_for('index', page=page-1) }}" class="page-link">« Назад</a>
+    {% endif %}
+
+    <span class="page-current">Страница {{ page }} из {{ ((total - 1) // books_per_page) + 1 }}</span>
+
+    {% if page * books_per_page < total %}
+        <a href="{{ url_for('index', page=page+1) }}" class="page-link">Вперед »</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Удаление книги</h2>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p id="modalMessage"></p>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal()" class="btn btn-secondary">Нет</button>
+            <button id="confirmDelete" class="btn btn-danger">Да</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

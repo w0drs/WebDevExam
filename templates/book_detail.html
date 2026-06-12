@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="book-detail">
+    <div class="book-detail-header">
+        <div class="book-detail-cover">
+            {% if book.cover %}
+            <img src="{{ url_for('static', filename='uploads/' + book.cover.filename) }}" alt="{{ book.title }}">
+            {% else %}
+            <div class="no-cover-large">Нет обложки</div>
+            {% endif %}
+        </div>
+        <div class="book-detail-info">
+            <h1>{{ book.title }}</h1>
+            <p class="detail-author"><strong>Автор:</strong> {{ book.author }}</p>
+            <p class="detail-year"><strong>Год:</strong> {{ book.year }}</p>
+            <p class="detail-publisher"><strong>Издательство:</strong> {{ book.publisher }}</p>
+            <p class="detail-pages"><strong>Объём:</strong> {{ book.pages }} стр.</p>
+            <div class="detail-genres">
+                <strong>Жанры:</strong>
+                {% for genre in book.genres %}
+                <span class="genre-tag">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
+            <div class="detail-rating">
+                <strong>Средняя оценка:</strong> ⭐ {{ "%.1f"|format(avg_rating) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="book-description">
+        <h3>Описание</h3>
+        <div class="description-content">
+            {{ book.description_html|safe }}
+        </div>
+    </div>
+
+    <div class="reviews-section">
+        <h3>Рецензии</h3>
+
+        {% if can_review %}
+        <div class="add-review-btn">
+            <a href="{{ url_for('add_review', book_id=book.id) }}" class="btn btn-primary">Написать рецензию</a>
+        </div>
+        {% endif %}
+
+        {% if user_review %}
+        <div class="user-review">
+            <h4>Ваша рецензия</h4>
+            <div class="review-card">
+                <div class="review-header">
+                    <span class="review-author">{{ user_review.user.full_name }}</span>
+                    <span class="review-rating">Оценка: {{ user_review.rating }}/5</span>
+                    <span class="review-status">Статус: {{ user_review.status_rel.name }}</span>
+                </div>
+                <div class="review-text">{{ user_review.text|safe }}</div>
+                <div class="review-date">{{ user_review.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <span class="review-author">{{ review.user.full_name }}</span>
+                    <span class="review-rating">Оценка: {{ review.rating }}/5</span>
+                </div>
+                <div class="review-text">{{ review.text|safe }}</div>
+                <div class="review-date">{{ review.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-reviews">Пока нет рецензий. Будьте первым!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

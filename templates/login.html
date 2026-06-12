@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-form">
+        <h2>Вход в систему</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Логин:</label>
+                <input type="text" id="username" name="username" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required class="form-control">
+            </div>
+            <div class="form-group checkbox">
+                <label>
+                    <input type="checkbox" name="remember"> Запомнить меня
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Войти</button>
+        </form>
+        <div class="login-info">
+            <p>Тестовые пользователи:</p>
+            <p>admin / admin123 (Администратор)</p>
+            <p>moderator / moderator123 (Модератор)</p>
+            <p>user / user123 (Пользователь)</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
